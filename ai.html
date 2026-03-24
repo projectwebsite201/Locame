@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- Added viewport-fit=cover for full-screen PWA support -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Atlas AI | Knowledge Navigator</title>
     
@@ -22,24 +21,20 @@
             --radius-md: 12px;
         }
 
-        * { margin:0; padding:0; box-sizing:border-box; font-family:'Nunito',sans-serif; -webkit-tap-highlight-color: transparent; }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Nunito',sans-serif; }
         
         body { 
             background: var(--bg-app); 
-            /* FIX: Use dvh (Dynamic Viewport Height) so keyboard doesn't push bar off-screen */
-            height: 100vh;
-            height: 100dvh; 
+            height: 100vh; 
+            height: 100dvh; /* Dynamic viewport height for mobile browsers */
             width: 100vw; 
-            display: flex; 
-            flex-direction: column; 
+            display: flex; flex-direction: column; 
             overflow: hidden; 
-            position: fixed; /* Prevents the page from 'bouncing' on mobile */
         }
 
-        /* HEADER - Added Top Safe Area for notches */
+        /* HEADER - Matched to Ask AI */
         .ai-header { 
             padding: 15px 20px; 
-            padding-top: calc(15px + env(safe-area-inset-top));
             flex-shrink: 0; 
             display: flex; 
             align-items: center; 
@@ -78,7 +73,6 @@
             display: flex;
             flex-direction: column;
             gap: 15px;
-            -webkit-overflow-scrolling: touch;
         }
         #chat-scroller::-webkit-scrollbar { display: none; }
 
@@ -106,6 +100,25 @@
             align-self: flex-end; 
         }
 
+        /* WIKIPEDIA CARD CONTENT */
+        .k-card { margin: -5px; border-radius: 10px; overflow: hidden; }
+        .k-banner { width: 100%; height: 160px; object-fit: cover; margin-bottom: 10px; border-radius: 8px; }
+        .k-title { font-size: 18px; font-weight: 900; margin-bottom: 5px; color: var(--accent); }
+        .k-desc { font-size: 13px; color: var(--text-main); opacity: 0.9; }
+
+        /* HORIZONTAL SWIPER */
+        .swipe-box { 
+            display: flex; overflow-x: auto; gap: 10px; 
+            margin-top: 12px; padding-bottom: 5px;
+        }
+        .swipe-box::-webkit-scrollbar { display: none; }
+        .rel-card {
+            flex: 0 0 110px; background: #f8f9fa; border-radius: 12px;
+            border: 1px solid #eee; overflow: hidden; cursor: pointer;
+        }
+        .rel-img { width: 100%; height: 70px; object-fit: cover; }
+        .rel-name { padding: 6px; font-size: 10px; font-weight: 800; text-align: center; color: var(--text-main); }
+
         /* QUICK SUGGESTION PILLS */
         .quick-questions { 
             padding: 10px 15px; display: flex; gap: 8px; overflow-x: auto; flex-shrink: 0; 
@@ -129,30 +142,27 @@
             font-size: 13px; font-weight: 700; color: var(--text-main);
             display: flex; align-items: center; gap: 10px; cursor: pointer;
         }
+        .suggest-item:hover { background: var(--accent-soft); }
 
-        /* INPUT BAR - FIXED FOR PWA */
+        /* INPUT BAR - Increased bottom padding for mobile clearance */
         .chat-input-bar { 
-            padding: 12px 15px; 
-            /* FIX: Added padding for the home-indicator bar at bottom of mobile screens */
-            padding-bottom: calc(15px + env(safe-area-inset-bottom)); 
+            padding: 12px 15px calc(45px + env(safe-area-inset-bottom, 0px)); 
             background: white; 
             box-shadow: 0 -2px 15px rgba(0,0,0,0.06); 
             display: flex; align-items: center; gap: 10px; 
             flex-shrink: 0; position: relative;
         }
-        
         .input-box-wrapper {
             flex: 1; display: flex; align-items: center;
             background: #f8f9fa; border: 1.5px solid #eee;
             border-radius: 50px; padding: 2px 5px 2px 15px;
             transition: 0.3s;
         }
+        .input-box-wrapper:focus-within { border-color: var(--accent); background: white; }
         
         #userInput { 
-            flex: 1; border: none; outline: none; height: 42px; 
-            /* FIX: 16px prevents iOS/Chrome from auto-zooming and hiding the UI */
-            font-size: 16px; 
-            font-weight: 700; background: transparent; 
+            flex: 1; border: none; outline: none; height: 40px; 
+            font-size: 14px; font-weight: 700; background: transparent; 
         }
         
         .send-btn {
@@ -160,28 +170,19 @@
             border-radius: 50%; border: none; display: flex; align-items: center; justify-content: center;
             cursor: pointer; transition: 0.2s;
         }
-
-        /* WIKIPEDIA CONTENT STYLES */
-        .k-card { margin: -5px; border-radius: 10px; overflow: hidden; }
-        .k-banner { width: 100%; height: 160px; object-fit: cover; margin-bottom: 10px; border-radius: 8px; }
-        .k-title { font-size: 18px; font-weight: 900; margin-bottom: 5px; color: var(--accent); }
-        .k-desc { font-size: 13px; color: var(--text-main); opacity: 0.9; }
-        .swipe-box { display: flex; overflow-x: auto; gap: 10px; margin-top: 12px; padding-bottom: 5px; }
-        .rel-card { flex: 0 0 110px; background: #f8f9fa; border-radius: 12px; border: 1px solid #eee; overflow: hidden; cursor: pointer; }
-        .rel-img { width: 100%; height: 70px; object-fit: cover; }
-        .rel-name { padding: 6px; font-size: 10px; font-weight: 800; text-align: center; color: var(--text-main); }
+        .send-btn:active { transform: scale(0.9); }
 
         /* TYPING INDICATOR */
         .typing { display: flex; gap: 4px; padding: 5px 10px; align-self: flex-start; }
         .dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: bounce 1.2s infinite; }
         @keyframes bounce { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-6px); } }
+
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
 <div class="ai-header">
-    <!-- Links back to your main app file -->
     <button class="back-btn" onclick="window.location.href='index.html'">
         <i data-lucide="chevron-left"></i>
     </button>
@@ -189,7 +190,7 @@
         <i data-lucide="globe"></i>
     </div>
     <div style="flex:1">
-        <h2>Atlas AI</h2>
+        <h2>LocaMe AI</h2>
         <p><span class="ai-status"></span>Knowledge Discovery Active</p>
     </div>
     <button class="back-btn" onclick="newChat()"><i data-lucide="refresh-ccw" size="18"></i></button>
@@ -201,6 +202,7 @@
     </div>
 </div>
 
+<!-- Quick Pills -->
 <div class="quick-questions">
     <button class="quick-q" onclick="handleSend('Great Wall of China')">Great Wall of China</button>
     <button class="quick-q" onclick="handleSend('Quantum Physics')">Quantum Physics</button>
@@ -224,13 +226,6 @@
     const scroller = document.getElementById('chat-scroller');
     const userInput = document.getElementById('userInput');
     const autoBox = document.getElementById('autocomplete-box');
-
-    // FIX: Scroll to bottom when keyboard opens
-    userInput.addEventListener('focus', () => {
-        setTimeout(() => {
-            scroller.scrollTop = scroller.scrollHeight;
-        }, 300);
-    });
 
     // Autocomplete Logic
     let timeout = null;
@@ -259,6 +254,7 @@
         }, 300);
     });
 
+    // Handle Send
     async function handleSend(q) {
         const text = q || userInput.value.trim();
         if(!text) return;
