@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Atlas AI | Knowledge Navigator</title>
     
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -25,14 +25,20 @@
         
         body { 
             background: var(--bg-app); 
-            height: 100vh; width: 100vw; 
-            display: flex; flex-direction: column; 
+            /* Fix for mobile Chrome height issues */
+            height: 100vh;
+            height: 100dvh; 
+            width: 100vw; 
+            display: flex; 
+            flex-direction: column; 
             overflow: hidden; 
+            position: fixed; /* Prevents the whole page from bouncing/shifting */
         }
 
         /* HEADER - Matched to Ask AI */
         .ai-header { 
             padding: 15px 20px; 
+            padding-top: calc(15px + env(safe-area-inset-top));
             flex-shrink: 0; 
             display: flex; 
             align-items: center; 
@@ -71,6 +77,7 @@
             display: flex;
             flex-direction: column;
             gap: 15px;
+            -webkit-overflow-scrolling: touch;
         }
         #chat-scroller::-webkit-scrollbar { display: none; }
 
@@ -142,13 +149,15 @@
         }
         .suggest-item:hover { background: var(--accent-soft); }
 
-        /* INPUT BAR */
+        /* INPUT BAR - Adjusted for Mobile Visibility */
         .chat-input-bar { 
-            padding: 12px 15px 30px; 
+            padding: 12px 15px; 
+            padding-bottom: calc(12px + env(safe-area-inset-bottom)); /* Respects mobile chin/notch */
             background: white; 
             box-shadow: 0 -2px 15px rgba(0,0,0,0.06); 
             display: flex; align-items: center; gap: 10px; 
             flex-shrink: 0; position: relative;
+            z-index: 100;
         }
         .input-box-wrapper {
             flex: 1; display: flex; align-items: center;
@@ -160,7 +169,8 @@
         
         #userInput { 
             flex: 1; border: none; outline: none; height: 40px; 
-            font-size: 14px; font-weight: 700; background: transparent; 
+            font-size: 16px; /* 16px prevents iOS/Chrome zoom on focus */
+            font-weight: 700; background: transparent; 
         }
         
         .send-btn {
@@ -224,6 +234,13 @@
     const scroller = document.getElementById('chat-scroller');
     const userInput = document.getElementById('userInput');
     const autoBox = document.getElementById('autocomplete-box');
+
+    // Scroll to bottom when keyboard appears
+    userInput.addEventListener('focus', () => {
+        setTimeout(() => {
+            scroller.scrollTop = scroller.scrollHeight;
+        }, 300);
+    });
 
     // Autocomplete Logic
     let timeout = null;
