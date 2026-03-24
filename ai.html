@@ -25,10 +25,12 @@
         
         body { 
             background: var(--bg-app); 
-            height: 100vh; 
-            height: 100dvh; /* Dynamic viewport height for mobile browsers */
+            /* Fix: Use dvh (dynamic viewport height) to prevent hiding behind mobile browser bars */
+            height: 100vh;
+            height: 100dvh; 
             width: 100vw; 
-            display: flex; flex-direction: column; 
+            display: flex; 
+            flex-direction: column; 
             overflow: hidden; 
         }
 
@@ -42,6 +44,8 @@
             background: var(--card); 
             box-shadow: 0 2px 10px rgba(0,0,0,0.05); 
             z-index: 10;
+            /* Extra padding for notched phones */
+            padding-top: calc(15px + env(safe-area-inset-top, 0px));
         }
         .back-btn {
             background: var(--accent-soft);
@@ -144,13 +148,15 @@
         }
         .suggest-item:hover { background: var(--accent-soft); }
 
-        /* INPUT BAR - Increased bottom padding for mobile clearance */
+        /* INPUT BAR - FIXED FOR MOBILE */
         .chat-input-bar { 
-            padding: 12px 15px calc(45px + env(safe-area-inset-bottom, 0px)); 
+            /* Added calc to keep it up and visible above browser bars */
+            padding: 12px 15px calc(15px + env(safe-area-inset-bottom, 15px)); 
             background: white; 
             box-shadow: 0 -2px 15px rgba(0,0,0,0.06); 
             display: flex; align-items: center; gap: 10px; 
             flex-shrink: 0; position: relative;
+            z-index: 100;
         }
         .input-box-wrapper {
             flex: 1; display: flex; align-items: center;
@@ -162,7 +168,8 @@
         
         #userInput { 
             flex: 1; border: none; outline: none; height: 40px; 
-            font-size: 14px; font-weight: 700; background: transparent; 
+            font-size: 16px; /* 16px prevents iOS zoom on focus */
+            font-weight: 700; background: transparent; 
         }
         
         .send-btn {
